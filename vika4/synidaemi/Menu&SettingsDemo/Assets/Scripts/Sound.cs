@@ -17,4 +17,13 @@ public class Sound
     public bool loop;
 
     public bool playOnAwake;
+
+    [HideInInspector]
+    public bool isFadingOut;
+
+    [HideInInspector]
+    public bool isFadingIn;
+
+    [HideInInspector]
+    public Coroutine routine;
 }

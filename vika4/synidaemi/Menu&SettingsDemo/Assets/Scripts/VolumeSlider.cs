@@ -5,7 +5,7 @@ public class VolumeSlider : MonoBehaviour
 {
     Slider slider;
 
-    void Start()
+    void Awake()
     {
         slider = GetComponent<Slider>();
         slider.value = Settings.instance.GetVolume();

@@ -8,7 +8,13 @@ public class Settings : MonoBehaviour
     [SerializeField]
     UnityEvent<float> onVolumeChange;
 
-    float volumeScale = 0.5f;
+    static float volumeScale = 0.5f;
+
+    public static float VolumeScale
+    {
+        get => volumeScale;
+        set => instance.SetVolume(value);
+    }
 
     void Awake()
     {
@@ -21,9 +27,9 @@ public class Settings : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void SetVolume(float volumeScale)
+    public void SetVolume(float _volumeScale)
     {
-        this.volumeScale = volumeScale;
+        volumeScale = _volumeScale;
         onVolumeChange.Invoke(volumeScale);
     }
     public float GetVolume() => volumeScale;

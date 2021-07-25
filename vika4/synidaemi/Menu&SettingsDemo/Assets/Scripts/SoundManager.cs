@@ -16,6 +16,7 @@ public class SoundManager : MonoBehaviour
         bool onlyOneSoundManagerActive = SetUpSingleton();
         if (!onlyOneSoundManagerActive) return;
         SetUpSounds();
+        OnVolumeChange(Settings.VolumeScale);
     }
 
     bool SetUpSingleton()
@@ -32,7 +33,7 @@ public class SoundManager : MonoBehaviour
 
     void SetUpSounds()
     {
-        foreach(var sound in sounds)
+        foreach (var sound in sounds)
         {
             var source = gameObject.AddComponent<AudioSource>();
             source.clip = sound.clip;
@@ -47,7 +48,24 @@ public class SoundManager : MonoBehaviour
 
     public void OnVolumeChange(float volumeScale)
     {
-        foreach (var sound in sounds) sources[sound.name].volume = sound.volume * volumeScale;
+        foreach (var sound in sounds)
+        {
+            if (sound.isFadingOut)
+            {
+                StopCoroutine(sound.routine);
+                sound.isFadingOut = false;
+                sources[sound.name].Stop();
+            }
+            else
+            {
+                if (sound.isFadingIn)
+                {
+                    StopCoroutine(sound.routine);
+                    sound.isFadingIn = false;
+                }
+                sources[sound.name].volume = sound.volume * volumeScale;
+            }
+        }
     }
 
     public void PlaySound(string name)
@@ -86,9 +104,11 @@ public class SoundManager : MonoBehaviour
             return;
         }
         float totalVolume = -1f;
+        Sound sound = null;
         for (int i = 0; i < sounds.Length; i++)
-            if(sounds[i].name == name)
+            if (sounds[i].name == name)
             {
+                sound = sounds[i];
                 totalVolume = sounds[i].volume;
                 break;
             }
@@ -99,12 +119,15 @@ public class SoundManager : MonoBehaviour
             return;
         }
 
-        if (fadeIn) StartCoroutine(FadeInSoundRoutine(sources[name], totalVolume, time));
-        else StartCoroutine(FadeOutSoundRoutine(sources[name], totalVolume, time));
+        Coroutine routine = null;
+        if (fadeIn) routine = StartCoroutine(FadeInSoundRoutine(sources[name], totalVolume * Settings.instance.GetVolume(), time, sound));
+        else routine = StartCoroutine(FadeOutSoundRoutine(sources[name], sources[name].volume, time, sound));
+        sound.routine = routine;
     }
 
-    IEnumerator FadeInSoundRoutine(AudioSource source, float totalVolume, float fadeTime)
+    IEnumerator FadeInSoundRoutine(AudioSource source, float totalVolume, float fadeTime, Sound sound)
     {
+        sound.isFadingIn = true;
         source.Play();
         float elapsedTime = 0f;
         while (elapsedTime < fadeTime)
@@ -114,10 +137,12 @@ public class SoundManager : MonoBehaviour
             yield return null;
         }
         source.volume = totalVolume;
+        sound.isFadingIn = false;
     }
 
-    IEnumerator FadeOutSoundRoutine(AudioSource source, float totalVolume, float fadeTime)
+    IEnumerator FadeOutSoundRoutine(AudioSource source, float totalVolume, float fadeTime, Sound sound)
     {
+        sound.isFadingOut = true;
         float timeRemaining = fadeTime;
         while (timeRemaining > 0f)
         {
@@ -127,6 +152,7 @@ public class SoundManager : MonoBehaviour
         }
         source.volume = 0f;
         source.Stop();
+        sound.isFadingOut = false;
     }
 
 }

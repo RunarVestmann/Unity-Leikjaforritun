@@ -169,16 +169,20 @@ MonoBehaviour:
   sounds:
   - name: MainMenuTheme
     clip: {fileID: 8300000, guid: e9c297c82c767ab4a82e40e708774a41, type: 3}
-    volume: 0.57
+    volume: 1
     pitch: 1
     loop: 1
     playOnAwake: 1
+    isFadingOut: 0
+    isFadingIn: 0
   - name: Level1Theme
     clip: {fileID: 8300000, guid: f7e2b1878a463a643a4e97d330ba0880, type: 3}
-    volume: 0.575
+    volume: 1
     pitch: 1
     loop: 1
     playOnAwake: 0
+    isFadingOut: 0
+    isFadingIn: 0
 --- !u!1 &363980935
 GameObject:
   m_ObjectHideFlags: 0

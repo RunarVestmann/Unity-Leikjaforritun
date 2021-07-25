@@ -742,7 +742,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   themeFadeInTime: 4
-  volumeSilder: {fileID: 959536738}
 --- !u!114 &1730122116
 MonoBehaviour:
   m_ObjectHideFlags: 0
